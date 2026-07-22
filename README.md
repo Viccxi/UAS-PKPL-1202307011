@@ -1,58 +1,485 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 📚 Sistem Informasi Manajemen Tugas Mahasiswa
 
-## About Laravel
+**REST API** berbasis **Laravel 13** untuk manajemen tugas akademik mahasiswa dengan autentikasi berbasis token dan kontrol akses berbasis peran.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Sanctum](https://img.shields.io/badge/Laravel_Sanctum-4.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📋 Daftar Isi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- [Tentang Proyek](#-tentang-proyek)
+- [Fitur Utama](#-fitur-utama)
+- [Tech Stack](#-tech-stack)
+- [Struktur Database](#-struktur-database)
+- [Instalasi & Setup](#-instalasi--setup)
+- [Dokumentasi API](#-dokumentasi-api)
+- [Format Respons](#-format-respons-standar)
+- [Autentikasi](#-autentikasi)
+- [Kontrol Akses (Role)](#-kontrol-akses-role)
+- [Contoh Penggunaan](#-contoh-penggunaan)
+- [Struktur Proyek](#-struktur-proyek)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🎯 Tentang Proyek
 
-## Agentic Development
+Proyek ini adalah implementasi **RESTful API** untuk sistem manajemen tugas mahasiswa yang dibangun sebagai bagian dari **Ujian Akhir Semester (UAS)** mata kuliah **Pemrograman Komputer Perangkat Lunak (PKPL)**.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+API ini memungkinkan mahasiswa untuk mengelola tugas-tugas akademik mereka secara terstruktur, dengan fitur autentikasi, manajemen prioritas, filter tugas, dan pemantauan status penyelesaian.
 
+> **NIM:** 1202307011
+
+---
+
+## ✨ Fitur Utama
+
+| Fitur | Keterangan |
+|-------|-----------|
+| 🔐 **Autentikasi Sanctum** | Token-based authentication menggunakan Laravel Sanctum |
+| 👥 **Manajemen Peran** | Dua peran: `admin` dan `user` dengan hak akses berbeda |
+| ✅ **CRUD Tugas** | Buat, baca, ubah, dan hapus tugas secara penuh |
+| 🔍 **Filter & Pencarian** | Filter tugas berdasarkan status, prioritas, dan judul |
+| ✔️ **Penandaan Selesai** | Endpoint khusus untuk menandai tugas sebagai selesai |
+| 🛡️ **Policy-based Authorization** | Otorisasi akses data menggunakan Laravel Policy |
+| 📦 **Respons JSON Konsisten** | Seluruh endpoint mengembalikan format JSON yang seragam |
+| 🚫 **Global Exception Handler** | Semua error (401, 403, 404, 422, 500) dikembalikan sebagai JSON |
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** [Laravel 13](https://laravel.com)
+- **Language:** PHP 8.3
+- **Database:** MySQL 8.0
+- **Autentikasi:** [Laravel Sanctum](https://laravel.com/docs/sanctum) v4.x
+- **Authorization:** Laravel Policies & Gates
+- **Server Development:** MAMP / PHP Built-in Server
+
+---
+
+## 🗄️ Struktur Database
+
+### Tabel `users`
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| `id` | bigint | Primary key |
+| `name` | varchar(255) | Nama lengkap |
+| `email` | varchar(255) | Email unik |
+| `password` | varchar(255) | Password (bcrypt) |
+| `role` | enum('admin','user') | Peran pengguna, default `user` |
+| `email_verified_at` | timestamp | Nullable |
+| `created_at` | timestamp | — |
+| `updated_at` | timestamp | — |
+
+### Tabel `tasks`
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| `id` | bigint | Primary key |
+| `user_id` | bigint | Foreign key → `users.id` |
+| `title` | varchar(255) | Judul tugas (wajib) |
+| `description` | text | Deskripsi (opsional) |
+| `priority` | enum('low','medium','high') | Prioritas tugas |
+| `status` | enum('pending','progress','completed') | Status tugas |
+| `due_date` | date | Tenggat waktu (wajib) |
+| `completed_at` | datetime | Nullable, diisi saat selesai |
+| `created_at` | timestamp | — |
+| `updated_at` | timestamp | — |
+
+---
+
+## 🚀 Instalasi & Setup
+
+### Prasyarat
+- PHP >= 8.3
+- Composer
+- MySQL 8.0
+- MAMP / Laragon / XAMPP (opsional)
+
+### Langkah Instalasi
+
+**1. Clone repositori**
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/<username>/UAS-PKPL-1202307011.git
+cd UAS-PKPL-1202307011
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**2. Install dependensi**
+```bash
+composer install
+```
 
-## Contributing
+**3. Salin file environment**
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**4. Konfigurasi `.env`**
+```env
+APP_NAME="Sistem Informasi Manajemen Tugas Mahasiswa"
+APP_URL=http://localhost:8000
 
-## Code of Conduct
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=uas_pkpl_1202307011
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**5. Generate application key**
+```bash
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+**6. Buat database MySQL**
+```sql
+CREATE DATABASE uas_pkpl_1202307011 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**7. Jalankan migration & seeder**
+```bash
+php artisan migrate:fresh --seed
+```
 
-## License
+> Seeder akan membuat 2 akun default:
+> - **Admin:** `admin@example.com` / `password123`
+> - **User:** `user@example.com` / `password123`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**8. Jalankan server**
+```bash
+php artisan serve
+```
+
+API tersedia di: **`http://127.0.0.1:8000/api`**
+
+---
+
+## 📡 Dokumentasi API
+
+### Base URL
+```
+http://127.0.0.1:8000/api
+```
+
+### Header Wajib (Endpoint Terlindungi)
+```
+Authorization: Bearer {your_token}
+Accept: application/json
+Content-Type: application/json
+```
+
+---
+
+### 🔓 A. Endpoint Publik
+
+#### `POST /api/register`
+Mendaftarkan pengguna baru.
+
+**Request Body:**
+```json
+{
+  "name": "Budi Santoso",
+  "email": "budi@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+**Response `201`:**
+```json
+{
+  "success": true,
+  "message": "Registrasi berhasil.",
+  "data": {
+    "user": { "id": 3, "name": "Budi Santoso", "email": "budi@example.com", "role": "user" },
+    "access_token": "1|xxxxxxxxxxxxxxxx",
+    "token_type": "Bearer"
+  }
+}
+```
+
+---
+
+#### `POST /api/login`
+Login dan mendapatkan Bearer Token.
+
+**Request Body:**
+```json
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+```
+
+**Response `200`:**
+```json
+{
+  "success": true,
+  "message": "Login berhasil.",
+  "data": {
+    "user": { "id": 1, "name": "Administrator", "role": "admin" },
+    "access_token": "1|xxxxxxxxxxxxxxxx",
+    "token_type": "Bearer"
+  }
+}
+```
+
+---
+
+### 🔐 B. Endpoint Terlindungi (Butuh Bearer Token)
+
+#### `GET /api/user`
+Melihat profil pengguna yang sedang login.
+
+---
+
+#### `POST /api/logout`
+Logout dan menghapus token aktif.
+
+---
+
+#### `GET /api/tasks`
+Mengambil daftar tugas.
+- **User:** hanya tugasnya sendiri
+- **Admin:** seluruh tugas semua pengguna
+
+**Query Parameters (opsional):**
+| Parameter | Nilai | Contoh |
+|-----------|-------|--------|
+| `status` | `pending` / `progress` / `completed` | `?status=pending` |
+| `priority` | `low` / `medium` / `high` | `?priority=high` |
+| `search` | string bebas | `?search=laporan` |
+
+**Contoh kombinasi:**
+```
+GET /api/tasks?status=progress&priority=high&search=skripsi
+```
+
+---
+
+#### `POST /api/tasks`
+Menambahkan tugas baru.
+
+**Request Body:**
+```json
+{
+  "title": "Membuat Laporan Akhir",
+  "description": "Laporan PKL semester ini",
+  "priority": "high",
+  "status": "pending",
+  "due_date": "2025-12-31"
+}
+```
+
+---
+
+#### `GET /api/tasks/{id}`
+Melihat detail tugas berdasarkan ID.
+
+---
+
+#### `PUT /api/tasks/{id}` atau `PATCH /api/tasks/{id}`
+Memperbarui data tugas. Semua field bersifat opsional.
+
+**Request Body:**
+```json
+{
+  "status": "progress",
+  "priority": "medium"
+}
+```
+
+---
+
+#### `DELETE /api/tasks/{id}`
+Menghapus tugas berdasarkan ID.
+
+---
+
+#### `PATCH /api/tasks/{id}/complete`
+Menandai tugas sebagai **selesai**. Secara otomatis mengisi `status = completed` dan `completed_at = now()`.
+
+---
+
+### 👑 C. Endpoint Khusus Admin
+
+> Membutuhkan akun dengan `role = admin`.
+
+#### `GET /api/admin/users`
+Melihat seluruh daftar pengguna beserta jumlah tugasnya.
+
+#### `GET /api/admin/tasks`
+Melihat seluruh tugas dari semua pengguna beserta data pemilik (relasi user).
+
+---
+
+## 📐 Format Respons Standar
+
+Seluruh endpoint **wajib** mengembalikan format JSON konsisten berikut:
+
+```jsonc
+// ✅ Sukses (200 / 201)
+{
+  "success": true,
+  "message": "Pesan sukses.",
+  "data": { ... }
+}
+
+// ❌ Validasi Gagal (422)
+{
+  "success": false,
+  "message": "Data yang diberikan tidak valid.",
+  "errors": {
+    "email": ["Email sudah terdaftar."],
+    "password": ["Password minimal 8 karakter."]
+  }
+}
+
+// ❌ Unauthenticated (401)
+{
+  "success": false,
+  "message": "Unauthenticated."
+}
+
+// ❌ Forbidden (403)
+{
+  "success": false,
+  "message": "Anda tidak memiliki hak akses."
+}
+
+// ❌ Not Found (404)
+{
+  "success": false,
+  "message": "Data tugas tidak ditemukan."
+}
+
+// ❌ Server Error (500)
+{
+  "success": false,
+  "message": "Pesan error internal."
+}
+```
+
+---
+
+## 🔑 Autentikasi
+
+Proyek ini menggunakan **Laravel Sanctum** dengan mekanisme token berbasis API.
+
+1. Lakukan `POST /api/login` → dapatkan `access_token`
+2. Sertakan token pada setiap request terlindungi:
+   ```
+   Authorization: Bearer {access_token}
+   ```
+3. Lakukan `POST /api/logout` untuk menghapus token
+
+---
+
+## 👥 Kontrol Akses (Role)
+
+| Aksi | Role `user` | Role `admin` |
+|------|:-----------:|:------------:|
+| Register & Login | ✅ | ✅ |
+| Lihat profil sendiri | ✅ | ✅ |
+| Buat tugas | ✅ | ✅ |
+| Lihat daftar tugas | ✅ hanya miliknya | ✅ semua |
+| Lihat detail tugas | ✅ hanya miliknya | ✅ semua |
+| Edit tugas | ✅ hanya miliknya | ✅ semua |
+| Hapus tugas | ✅ hanya miliknya | ✅ semua |
+| Tandai selesai | ✅ hanya miliknya | ✅ semua |
+| `GET /api/admin/users` | ❌ 403 | ✅ |
+| `GET /api/admin/tasks` | ❌ 403 | ✅ |
+
+---
+
+## 💡 Contoh Penggunaan (cURL)
+
+**Register:**
+```bash
+curl -X POST http://127.0.0.1:8000/api/register \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Budi","email":"budi@mail.com","password":"password123","password_confirmation":"password123"}'
+```
+
+**Login:**
+```bash
+curl -X POST http://127.0.0.1:8000/api/login \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"password123"}'
+```
+
+**Buat Tugas:**
+```bash
+curl -X POST http://127.0.0.1:8000/api/tasks \
+  -H "Authorization: Bearer {token}" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Kerjakan UAS","priority":"high","status":"pending","due_date":"2025-12-31"}'
+```
+
+**Filter Tugas:**
+```bash
+curl http://127.0.0.1:8000/api/tasks?status=pending&priority=high \
+  -H "Authorization: Bearer {token}" \
+  -H "Accept: application/json"
+```
+
+---
+
+## 📁 Struktur Proyek
+
+```
+UAS-PKPL-1202307011/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/
+│   │   │       ├── AuthController.php      # Register, Login, Profile, Logout
+│   │   │       ├── TaskController.php      # CRUD Tugas + Complete
+│   │   │       └── AdminController.php     # Admin: Users & Tasks
+│   │   ├── Middleware/
+│   │   │   └── AdminMiddleware.php         # Cek role admin
+│   │   └── Requests/
+│   │       ├── RegisterRequest.php         # Validasi registrasi
+│   │       ├── LoginRequest.php            # Validasi login
+│   │       ├── StoreTaskRequest.php        # Validasi buat tugas
+│   │       └── UpdateTaskRequest.php       # Validasi update tugas
+│   ├── Models/
+│   │   ├── User.php                        # Model User + HasApiTokens
+│   │   └── Task.php                        # Model Task
+│   └── Policies/
+│       └── TaskPolicy.php                  # Otorisasi akses tugas
+├── bootstrap/
+│   └── app.php                             # Global Exception Handler JSON
+├── database/
+│   ├── migrations/
+│   │   ├── ..._create_users_table.php      # + kolom role
+│   │   └── ..._create_tasks_table.php      # Tabel tasks
+│   └── seeders/
+│       ├── AdminSeeder.php                 # Seed akun admin & user
+│       └── DatabaseSeeder.php
+└── routes/
+    └── api.php                             # Semua route API
+```
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dibuat untuk keperluan akademik — **Ujian Akhir Semester PKPL**.
+
+<div align="center">
+  <p>Dibuat dengan ❤️ menggunakan <strong>Laravel 13</strong></p>
+  <p>NIM: 1202307011</p>
+</div>
